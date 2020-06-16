@@ -1,6 +1,6 @@
 #!make -f
 
-CXX=clang++
+CXX=clang++-9
 CXXFLAGS=-std=c++2a
 
 HEADERS=range.hpp accumulate.hpp filterfalse.hpp compress.hpp
