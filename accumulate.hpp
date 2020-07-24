@@ -6,79 +6,83 @@
 //  Copyright © 2020 Lee Fingerhut. All rights reserved.
 //
 #pragma once
-
 #include <iostream>
-#include <vector>
-
+#include <iterator>
 using namespace std;
 
-namespace itertools {
-typedef struct {
-    template <typename C>
-    C operator ()(C a, C b) const{
-        return a + b;
+
+ //מקבל כקלט מיכל או דמוי-מיכל כלשהו. מחזיר דמוי-מיכל חדש הכולל סכומים חלקיים. לדוגמה
+ //accumulate(range(5,9)) מייצג את המספרים 5, 11, 18, 26 (5, 5+6, 5+6+7, 5+6+7+8). וכך גם accumulate(vector({5,6,7,8})).
+
+namespace itertools{
+    typedef struct {
+    template <typename T>
+    auto operator()(const T& a , const T& b) const{
+    return a + b;
     }
-} plus;
- 
-template <typename C,typename F = plus>
-class accumulate {
-public:
-    C container;
-    F function;
-    
-    accumulate(C cont,F func =plus()) :container(cont),function(func) {}
-    
-    class iterator {
-    public:
-        typename C::iterator iter;
-        typename C::iterator end;
-        decltype(*(container.begin())) data;
+} _plus;
+
+    template <typename C, typename F = _plus> 
+    class accumulate{
+        C container;
         F function;
+
     public:
-        explicit iterator(typename C::iterator iter, typename C::iterator end, F func)
-        : iter(iter), end(end), function(func), data(*iter){};
-        //==
-        bool operator ==(const iterator& other) const {
-            return (iter == other.iter);
-        }
-        //!=
-        bool operator !=(const iterator& other) const {
-            return other.iter != iter;
-        }
-        iterator &operator=(const iterator &other) {
-            if (*this != other){
-                this->iter = other.iter;
-                this->end = other.end;
-                this->data = other.data;
-                this->function = other.function;
+        accumulate(C c, F f = _plus()) : container(c), function(f) {}
+
+        class iterator {
+        F function;
+        typename C::iterator iter; 
+        typename C::iterator last;
+        typename decay<decltype(*(container.begin()))>::type data;
+            
+        public:
+            iterator(typename C::iterator first, typename C::iterator l, F f) : iter(first), last(l), function(f) {
+                if (iter != last) 
+                    data = *iter;
             }
-            return *this;
-        }
-        //*
-        auto operator *() {
-            return data;
-        }
-        //++
-        iterator& operator++() {
-            ++iter;
-            if(iter != end){
-                data=function(data, *iter);
+
+            // ++i;
+            iterator &operator++(){
+                ++iter;
+                if (iter != last)
+                    data = function(data, *iter);
+                return *this;
             }
-            return *this;
+            // i++;
+            iterator operator++(int){
+                iterator i = *this;
+                ++(*i);
+                return i;
+            }
+            bool operator==(const iterator &other) const{
+                return (iter == other.iter);
+            }
+
+            bool operator!=(const iterator &other) const{
+                return (iter != other.iter);
+            }
+
+            auto operator*() const{
+                return data;
+            }
+
+            iterator &operator=(const iterator &other){
+                if  (*this        != other){
+                    this->iter     = other.it;
+                    this->last     = other.last;
+                    this->data     = other.data;
+                    this->function = other.function;
+                }
+                return *this;
+            }
+        };
+        iterator begin(){
+            return iterator(container.begin(), container.end(), function);
         }
-        iterator operator++(int) {
-            iterator temp = *this;
-            ++iter;
-            if (iter != end)
-                data = function(data, *iter);
-            return temp;
+
+        iterator end(){
+            return iterator(container.end(), container.end(), function);
         }
     };
-    iterator begin() {
-        return iterator(container.begin(), container.end(), function);
-    }
-    iterator end() {
-        return iterator(container.end(), container.end(), function);
-    }
-};
 }
