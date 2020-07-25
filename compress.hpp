@@ -28,7 +28,7 @@ public:
         typename B:: iterator bool_iter;
     public:
         iterator(typename C::iterator first,  typename C::iterator last,  typename B::iterator bool_it) : iter(first), last(last), bool_iter(bool_it) {
-            while( iter != last &&!(*bool_iter)){//boolean is false
+            while( iter != last &&!(*bool_iter)){//boolean is false until we will get to the end
                 ++iter;
                 ++bool_iter;
             }

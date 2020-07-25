@@ -20,24 +20,24 @@ namespace itertools{
     auto operator()(const T& a , const T& b) const{
     return a + b;
     }
-} _plus;
+} _plus;//
 
     template <typename C, typename F = _plus> 
     class accumulate{
-        C container;
-        F function;
+        C container;//getting
+        F function;//return
 
     public:
         accumulate(C c, F f = _plus()) : container(c), function(f) {}
 
         class iterator {
         F function;
-        typename C::iterator iter; 
-        typename C::iterator last;
-        typename decay<decltype(*(container.begin()))>::type data;
+        typename C::iterator iter; //start
+        typename C::iterator last; //end
+        typename decay<decltype(*(container.begin()))>::type data;//Cumulative value
             
         public:
-            iterator(typename C::iterator first, typename C::iterator l, F f) : iter(first), last(l), function(f) {
+            iterator(typename C::iterator first, typename C::iterator l, F f) : iter(first), last(l), function(f) {//initialization
                 if (iter != last) 
                     data = *iter;
             }
