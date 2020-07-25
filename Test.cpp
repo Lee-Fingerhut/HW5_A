@@ -20,8 +20,7 @@ TEST_CASE("Range 1"){
     CHECK(j == 8);
 }
 
-TEST_CASE("Range 2")
-{
+TEST_CASE("Range 2"){
     vector<int> v = {2,3,4,5};
     int j = 0;
     for(int i : range(2,6)){
@@ -43,14 +42,14 @@ TEST_CASE("Range 3"){
     j=0;
     v.clear();
     v = {0,1,2,3};
-
     for(int i : range(0,4)){
         CHECK(i == v.at(j));
         ++j;
     }
 }
 
-TEST_CASE("Accumulate int"){
+TEST_CASE("Accumulate test 1"){
+    //int
     vector<int> v = {1,4,5,14};
     int j = 0;
     vector<int> vec ={1,3,1,9};
@@ -61,7 +60,8 @@ TEST_CASE("Accumulate int"){
     CHECK(j == 4);
 }
 
-TEST_CASE("Accumulate string"){
+TEST_CASE("Accumulate test 2"){
+    //string
     vector<string> v = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t"};
     vector<string> vec = {"a","ab","abc","abcd","abcde","abcdef","abcdefg","abcdefgh","abcdefghi","abcdefghij","abcdefghijk","abcdefghijkl","abcdefghijklm","abcdefghijklmn",
     "abcdefghijklmno","abcdefghijklmnop","abcdefghijklmnopq","abcdefghijklmnopqr","abcdefghijklmnopqrs","abcdefghijklmnopqrst"};
@@ -72,9 +72,17 @@ TEST_CASE("Accumulate string"){
     }
     CHECK(j == 20);
 }
-
+TEST_CASE("accumulate test 3") {
+    //functor
+    vector<int> result = {0,1,3,6,10,15,21,28,36};
+    int i = 0;
+    for (int j : accumulate(range(0,9), [](int x, int y){return x+y;})) {
+        CHECK(j == result.at(i));
+        i++;
+    }
+}
  
-TEST_CASE("Compress"){
+TEST_CASE("Compress test 1"){
     vector<int> v = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
     int j = 0;
     vector<bool> b {true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true, true};
@@ -85,7 +93,8 @@ TEST_CASE("Compress"){
     CHECK(j == 20);
 }
 
-TEST_CASE("Filterfalse"){
+TEST_CASE("Filterfalse test 1"){
+    //functor
     vector<int> v = {3,5,7};
     int j = 0;
     range r(2,9);
@@ -97,8 +106,16 @@ TEST_CASE("Filterfalse"){
     CHECK(j == 3);
 }
 
-TEST_CASE("Test")
-{
-    for (int i = 0; i < 100; i++)
-        CHECK(true);
-};
+TEST_CASE("filterfalse test 2") {
+    //struct
+    typedef struct {
+        bool operator()(int i) const {
+            return i%3 == 1;
+        }
+    } function;
+    range r(0,29);
+    function f;
+    for (auto i : filterfalse(f, r)) {
+                CHECK(f(i) == false);
+    }
+}
